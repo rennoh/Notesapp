@@ -80,7 +80,7 @@ def main():
     while True:
         print('''
               * * * Notesapp * * *
-              1. Listi notid)
+              1. Listi notid
               ''')
         valik = input('Valik:')
         
