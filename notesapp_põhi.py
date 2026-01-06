@@ -1,26 +1,15 @@
-<<<<<<< HEAD
 import json
 import os
 from datetime import datetime
+from notesapp_gui import start_gui
 
 Demo = False
 print(f'''
-      * * * Notes Application * * *
-
+      * * * NotesApp * * *
       Demo mode: {'On' if Demo else 'Off'}
-      Timestamp: {datetime.now()}
-
-
-
+      Timestamp: {datetime.now().isoformat()}
       ''')
-Note_faili_nimi = 'demo_notid.json' if Demo else 'notid.json'
-=======
-import _json
-import os
-from datetime import datetime
-
-Note_faili_nimi = "notid.json"
->>>>>>> b5ab6ae04a73dd1b27e8dc23a0df2609f0c6937a
+Note_faili_nimi = 'Demo/demo.notid.json' if Demo else 'Notid/notid.json'
 
 class Notid:
     def __init__(self,Fail_nimi=Note_faili_nimi):
@@ -28,7 +17,7 @@ class Notid:
         self.notid= []
         self.next_id = 1
         self.loe_notid()
-        Viimati_muudetud_aeg = datetime.now()
+        Viimati_muudetud_aeg = datetime.now().isoformat()
 
     # Failidega tegelemine
     
@@ -38,19 +27,24 @@ class Notid:
             self.next_id = 1
             return
         with open(self.Fail_nimi,'r',encoding='utf-8') as f:
-<<<<<<< HEAD
+
             data = json.load(f)
-        self.notid = data.get('Notes')
+        self.notid = data.get('notes', [])
         self.next_id = data.get('next_id',1)
 
     # Salvesta notid faili
+    
     def salvesta_notid(self):
+        dirpath = os.path.dirname(self.Fail_nimi)
+        if dirpath:
+            os.makedirs(dirpath, exist_ok=True)
+
         data = {
-            'Notes': self.notid,
-            'Next_id': self.next_id
+            'notes': self.notid,
+            'next_id': self.next_id
         }
         with open(self.Fail_nimi, 'w', encoding= 'utf-8') as f:
-            json.dump(data,f,ensure_ascii=False,indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=2)
             
     # Lisa uus note
     
@@ -59,7 +53,7 @@ class Notid:
             'id': self.next_id,
             'title': title,
             'body': body,
-            'timestamp': datetime.now()
+            'timestamp': datetime.now().isoformat()
             
                 }
         self.notid.append(note)
@@ -69,7 +63,25 @@ class Notid:
     
     # Muuda note-i 
 
-
+    def muuda_note(self, note_id, title, body, update_timestamp=True):
+        """
+        Muuda olemasolevat märget.
+        If `update_timestamp` is False, the note's timestamp will not be modified.
+        """
+        for note in self.notid:
+            if note['id'] == note_id:
+                note['title'] = title
+                note['body'] = body
+                if update_timestamp:
+                    note['timestamp'] = datetime.now().isoformat()
+                self.salvesta_notid()
+                return note
+        return None
+    
+    def leia_note_by_id(self, note_id):
+        for note in self.notid:
+            if note['id'] == note_id:
+                return note
     
     # Kustuta note id järgi
 
@@ -81,33 +93,12 @@ class Notid:
 
     def noti_list(self):
         return[{'id': note['id'], 'title': note['title'], 'timestamp': note['timestamp']} for note in self.notid]
- 
-
-# DEMO KONSOOLI INTERFACIGA KASUTAJA VAADE
+    
+# Callib GUI faili, et seda käivitada
 def main():
     manager = Notid()
-    while True:
-        print('''
-              * * * Notesapp * * *
-              1. Listi notid
-              ''')
-        valik = input('Valik:')
-        
-        if valik not in ['1','2','3','4']:
-            print('Valik pole kehtiv, proovi uuesti.')
-        elif valik == '1':
-            notid = manager.noti_list()
-            for note in notid:
-                print(f'{note['title']}, Muudetud: {note['timestamp']} ')
-            
+    start_gui(manager)
 
-
-                
-        
-
+    
 if __name__ == "__main__":
     main()
-=======
-            data = _json.load(f)
-    
->>>>>>> b5ab6ae04a73dd1b27e8dc23a0df2609f0c6937a
